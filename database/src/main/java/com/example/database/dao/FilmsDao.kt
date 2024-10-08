@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.database.models.FilmDBO
-import java.util.concurrent.Flow
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FilmsDao {
@@ -16,5 +16,8 @@ interface FilmsDao {
     suspend fun clear()
 
     @Query("SELECT * FROM films")
-    fun films(): Flow<>
+    suspend fun films(): List<FilmDBO>
+
+    @Query("SELECT * FROM films WHERE id = :id")
+    suspend fun film(id: Long): FilmDBO
 }

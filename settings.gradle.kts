@@ -23,3 +23,6 @@ rootProject.name = "SequeniaTestTask"
 include(":app")
 include(":api")
 include(":database")
+include(":data")
+include(":domain")
+include(":common")
