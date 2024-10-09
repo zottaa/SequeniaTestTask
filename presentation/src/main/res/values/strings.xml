@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">SequeniaTestTask</string>
+    <string name="film_image">film_image</string>
+    <string name="go_back_arrow">go_back_arrow</string>
+    <string name="no_internet_error">Ошибка подключения сети</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="genres">Жанры</string>
+    <string name="films">Фильмы</string>
+    <string name="default_image_icon">default_image_icon</string>
+    <string name="repeat">Повторить</string>
+</resources>

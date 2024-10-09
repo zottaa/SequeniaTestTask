@@ -9,9 +9,11 @@ import com.example.domain.FilmsRepository
 import com.example.domain.error.DataError
 import com.example.domain.models.Film
 import com.example.domain.models.FilmsLoadStatus
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import java.net.UnknownHostException
 
@@ -27,13 +29,13 @@ internal class FilmsRepositoryImpl(
 
         val server = serverFlow()
 
-        return cache.combine(server, mergeStrategy::merge)
+        return cache.combine(server, mergeStrategy::merge).flowOn(Dispatchers.IO)
     }
 
     private fun serverFlow(): Flow<FilmsLoadStatus> {
         val apiRequestStartFlow = flow {
             emit(FilmsLoadStatus.Loading(emptyList()))
-        }
+        }.flowOn(Dispatchers.IO)
 
         val apiRequestFlow = flow {
             val apiResponse = api.fetch()
@@ -54,7 +56,7 @@ internal class FilmsRepositoryImpl(
                             }
                         }
                     }
-
+                    //TODO INSERT TO DB
                     is FilmsResult.Success -> {
                         FilmsLoadStatus.Success(films = apiResponse.films.map { filmDTO ->
                             filmDTOtoDomainMapper.map(filmDTO)
@@ -62,29 +64,29 @@ internal class FilmsRepositoryImpl(
                     }
                 }
             )
-        }
+        }.flowOn(Dispatchers.IO)
 
-        val server = merge(apiRequestStartFlow, apiRequestFlow)
+        val server = merge(apiRequestStartFlow, apiRequestFlow).flowOn(Dispatchers.IO)
         return server
     }
 
     private fun cacheFlow(): Flow<FilmsLoadStatus> {
         val dbRequestStartFlow = flow {
             emit(FilmsLoadStatus.Loading(emptyList()))
-        }
+        }.flowOn(Dispatchers.IO)
         val dbRequestFlow = flow {
             val films = db.filmsDao.films()
             emit(FilmsLoadStatus.Success(films.map { filmDBO ->
                 filmDBOtoDomainMapper.map(filmDBO)
             }))
-        }
-        val cache = merge(dbRequestStartFlow, dbRequestFlow)
+        }.flowOn(Dispatchers.IO)
+        val cache = merge(dbRequestStartFlow, dbRequestFlow).flowOn(Dispatchers.IO)
         return cache
     }
 
     override fun film(id: Long): Flow<Film> {
         return flow {
             emit(filmDBOtoDomainMapper.map(db.filmsDao.film(id)))
-        }
+        }.flowOn(Dispatchers.IO)
     }
 }

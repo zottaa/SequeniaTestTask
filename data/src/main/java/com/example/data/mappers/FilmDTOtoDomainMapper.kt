@@ -12,13 +12,13 @@ internal class FilmDTOtoDomainMapperImpl : FilmDTOtoDomainMapper {
     override fun map(from: FilmDTO): Film {
         return Film(
             id = from.id,
-            localizedName = from.localizedName,
-            name = from.name,
-            year = from.year,
-            rating = from.rating,
-            imageUrl = from.imageUrl,
-            genres = from.genres,
-            description = from.description,
+            localizedName = from.localizedName ?: "",
+            name = from.name ?: "",
+            year = from.year ?: 1970,
+            rating = from.rating ?: 0f,
+            imageUrl = from.imageUrl ?: "",
+            genres = from.genres.map { it.replaceFirstChar { char -> char.uppercaseChar() } },
+            description = from.description ?: "",
         )
     }
 }

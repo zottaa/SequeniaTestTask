@@ -11,14 +11,12 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.9.2"
 serialization = "1.6.3"
+coil = "2.6.0"
 room = "2.6.1"
 composeBom = "2024.09.03"
 ksp = "1.9.23-1.0.20"
 jetbrainsKotlinJvm = "1.9.0"
 koin = "3.5.6"
-appcompat = "1.7.0"
-material = "1.12.0"
-firebaseCrashlyticsBuildtools = "3.0.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +45,9 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = {module = "io.insert-koin:koin-android"}
 koin-compose = {module = "io.insert-koin:koin-androidx-compose"}
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

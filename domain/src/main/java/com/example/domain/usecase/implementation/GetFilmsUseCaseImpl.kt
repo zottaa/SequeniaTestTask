@@ -6,18 +6,28 @@ import com.example.domain.models.FilmsLoadStatus
 import com.example.domain.usecase.GetFilmsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
 internal class GetFilmsUseCaseImpl(
     interactor: FilmsInteractor,
     private val repository: FilmsRepository
 ) : GetFilmsUseCase {
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val films = interactor.observeFilms().flatMapConcat {
-        repository.films()
+    private val films = interactor.observeFilms().flatMapLatest {
+        repository.films().map { loadStatus: FilmsLoadStatus ->
+            sortFilms(loadStatus)
+        }
     }
 
-    override fun invoke(): Flow<FilmsLoadStatus> {
-        return films
-    }
+    override fun invoke(): Flow<FilmsLoadStatus> =
+        films
+
+    private fun sortFilms(loadStatus: FilmsLoadStatus) =
+        when (loadStatus) {
+            is FilmsLoadStatus.Error -> loadStatus.copy(films = loadStatus.films.sortedBy { it.localizedName })
+            is FilmsLoadStatus.Loading -> loadStatus.copy(films = loadStatus.films.sortedBy { it.localizedName })
+            is FilmsLoadStatus.Success -> loadStatus.copy(films = loadStatus.films.sortedBy { it.localizedName })
+        }
 }

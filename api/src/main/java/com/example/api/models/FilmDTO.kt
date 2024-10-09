@@ -5,20 +5,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FilmDTO(
-    @SerialName("id")
+    @SerialName(value = "id")
     val id: Long,
-    @SerialName("localized_name")
-    val localizedName: String,
-    @SerialName("name")
-    val name: String,
-    @SerialName("year")
-    val year: Int,
-    @SerialName("rating")
-    val rating: Float,
-    @SerialName("image_url")
-    val imageUrl: String,
-    @SerialName("description")
-    val description: String,
-    @SerialName("genres")
+    @SerialName(value = "localized_name")
+    val localizedName: String?,
+    @SerialName(value = "name")
+    val name: String?,
+    @SerialName(value = "year")
+    val year: Int?,
+    @SerialName(value = "rating")
+    val rating: Float?,
+    @SerialName(value = "image_url")
+    val imageUrl: String?,
+    @SerialName(value = "description")
+    val description: String?,
+    @SerialName(value = "genres")
     val genres: List<String>
 )

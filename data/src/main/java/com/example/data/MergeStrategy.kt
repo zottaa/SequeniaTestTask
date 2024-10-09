@@ -9,7 +9,7 @@ internal interface MergeStrategy<E> {
 
 internal interface FilmsLoadStatusMergeStrategy : MergeStrategy<FilmsLoadStatus>
 
-internal class FilmsLoadStatusMergeStrategyImpl : MergeStrategy<FilmsLoadStatus> {
+internal class FilmsLoadStatusMergeStrategyImpl : FilmsLoadStatusMergeStrategy {
     @Suppress("CyclomaticComplexMethod")
     override fun merge(
         left: FilmsLoadStatus,
