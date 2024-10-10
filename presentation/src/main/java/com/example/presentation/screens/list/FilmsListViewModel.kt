@@ -81,7 +81,6 @@ internal class FilmsListViewModel(
     private fun observeFilms() {
         getFilmsUseCase()
             .onEach { filmsLoadStatus ->
-                println(filmsLoadStatus)
                 val newState = filmsLoadStatusToFilmsListScreenStateMapper.map(filmsLoadStatus)
                 handleNewState(newState)
             }.launchIn(viewModelScope)

@@ -3,6 +3,7 @@ package com.example.data
 import com.example.api.FilmsApi
 import com.example.api.FilmsResult
 import com.example.data.mappers.FilmDBOtoDomainMapper
+import com.example.data.mappers.FilmDTOtoDBOMapper
 import com.example.data.mappers.FilmDTOtoDomainMapper
 import com.example.database.FilmsDatabase
 import com.example.domain.FilmsRepository
@@ -22,6 +23,7 @@ internal class FilmsRepositoryImpl(
     private val api: FilmsApi,
     private val filmDBOtoDomainMapper: FilmDBOtoDomainMapper,
     private val filmDTOtoDomainMapper: FilmDTOtoDomainMapper,
+    private val filmDTOtoDBOMapper: FilmDTOtoDBOMapper,
     private val mergeStrategy: FilmsLoadStatusMergeStrategy,
 ) : FilmsRepository {
     override fun films(): Flow<FilmsLoadStatus> {
@@ -56,8 +58,11 @@ internal class FilmsRepositoryImpl(
                             }
                         }
                     }
-                    //TODO INSERT TO DB
+
                     is FilmsResult.Success -> {
+                        db.filmsDao.clearAndInsert(apiResponse.films.map { filmDTO ->
+                            filmDTOtoDBOMapper.map(filmDTO)
+                        })
                         FilmsLoadStatus.Success(films = apiResponse.films.map { filmDTO ->
                             filmDTOtoDomainMapper.map(filmDTO)
                         })

@@ -34,7 +34,6 @@ class FilmsApi internal constructor(
     suspend fun fetch(): FilmsResult =
         try {
             val response = instance.fetch()
-            println(response.films)
             FilmsResult.Success(response.films)
         } catch (exception: Exception) {
             FilmsResult.Error(exception)
