@@ -3,7 +3,7 @@ package com.example.presentation.screens.list
 import com.example.presentation.models.ErrorUi
 import com.example.presentation.models.FilmUi
 
-sealed class FilmsListScreenState {
+internal sealed class FilmsListScreenState {
     data class Loading(
         val films: List<FilmUi> = emptyList(),
         val genres: List<String> = emptyList(),

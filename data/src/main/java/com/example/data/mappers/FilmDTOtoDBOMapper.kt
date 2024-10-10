@@ -17,7 +17,7 @@ internal class FilmDTOtoDBOMapperImpl : FilmDTOtoDBOMapper {
             year = from.year ?: 1970,
             rating = from.rating ?: 0f,
             imageUrl = from.imageUrl ?: "",
-            genres = from.genres.map { it.replaceFirstChar { char -> char.uppercaseChar() } },
+            genres = from.genres,
             description = from.description ?: "",
         )
     }

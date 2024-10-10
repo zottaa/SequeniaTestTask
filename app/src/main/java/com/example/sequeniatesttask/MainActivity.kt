@@ -7,25 +7,22 @@ import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
+import com.example.presentation.screens.details.FilmDetailsScreen
 import com.example.presentation.screens.list.FilmsListScreen
 import com.example.presentation.theme.SequeniaTestTaskTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
         configureStatusBar()
-
-        setContent {
-            SequeniaTestTaskTheme {
-                FilmsListScreen()
-            }
-        }
     }
 
     private fun configureStatusBar() {
         this.window.statusBarColor = getColor(R.color.status_bar_color)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val controller = this.window.insetsController
             controller?.setSystemBarsAppearance(

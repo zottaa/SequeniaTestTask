@@ -41,12 +41,15 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FilmsListScreen() {
-    FilmsListScreen(viewModel = koinViewModel())
+fun FilmsListScreen(navigateToFilmDetails: (Long) -> Unit) {
+    FilmsListScreen(navigateToFilmDetails = navigateToFilmDetails, viewModel = koinViewModel())
 }
 
 @Composable
-internal fun FilmsListScreen(viewModel: FilmsListViewModel = koinViewModel()) {
+internal fun FilmsListScreen(
+    navigateToFilmDetails: (Long) -> Unit,
+    viewModel: FilmsListViewModel = koinViewModel()
+) {
     val state by viewModel.getState().collectAsStateWithLifecycle()
 
     val snackBarHostState = remember { SnackbarHostState() }
@@ -94,6 +97,7 @@ internal fun FilmsListScreen(viewModel: FilmsListViewModel = koinViewModel()) {
                     films = currentState.films,
                     genres = currentState.genres,
                     selectedGenre = currentState.selectedGenre,
+                    onFilmCardClick = {},
                     onGenreClick = viewModel::selectGenre
                 )
             }
@@ -103,7 +107,8 @@ internal fun FilmsListScreen(viewModel: FilmsListViewModel = koinViewModel()) {
                 films = currentState.films,
                 genres = currentState.genres,
                 selectedGenre = currentState.selectedGenre,
-                onGenreClick = viewModel::selectGenre
+                onFilmCardClick = {},
+                onGenreClick = {}
             )
 
             is FilmsListScreenState.Show -> FilmsListContent(
@@ -111,6 +116,7 @@ internal fun FilmsListScreen(viewModel: FilmsListViewModel = koinViewModel()) {
                 films = currentState.films,
                 genres = currentState.genres,
                 selectedGenre = currentState.selectedGenre,
+                onFilmCardClick = navigateToFilmDetails,
                 onGenreClick = viewModel::selectGenre
             )
         }
@@ -118,11 +124,12 @@ internal fun FilmsListScreen(viewModel: FilmsListViewModel = koinViewModel()) {
 }
 
 @Composable
-internal fun LoadingContent(
+private fun LoadingContent(
     modifier: Modifier = Modifier,
     films: List<FilmUi>,
     genres: List<String>,
     selectedGenre: String,
+    onFilmCardClick: (Long) -> Unit,
     onGenreClick: (String) -> Unit
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -135,6 +142,7 @@ internal fun LoadingContent(
             films = films,
             genres = genres,
             selectedGenre = selectedGenre,
+            onFilmCardClick = onFilmCardClick,
             onGenreClick = onGenreClick
         )
     }
@@ -146,7 +154,8 @@ internal fun FilmsListContent(
     films: List<FilmUi>,
     genres: List<String>,
     selectedGenre: String,
-    onGenreClick: (String) -> Unit
+    onFilmCardClick: (Long) -> Unit,
+    onGenreClick: (String) -> Unit,
 ) {
     val typography = LocalTypography.current
     val colors = LocalColorScheme.current
@@ -189,16 +198,18 @@ internal fun FilmsListContent(
             ) {
                 FilmCard(
                     film = filmPair[0],
-                    modifier = Modifier.weight(0.5f)
+                    modifier = Modifier.weight(0.45f),
+                    onClick = { onFilmCardClick(filmPair[0].id) }
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 if (filmPair.size > 1) {
                     FilmCard(
                         film = filmPair[1],
-                        modifier = Modifier.weight(0.5f)
+                        modifier = Modifier.weight(0.45f),
+                        onClick = { onFilmCardClick(filmPair[1].id) }
                     )
                 } else {
-                    Spacer(modifier = Modifier.weight(0.5f))
+                    Spacer(modifier = Modifier.weight(0.45f))
                 }
             }
         }

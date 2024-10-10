@@ -1,11 +1,14 @@
 package com.example.presentation.uikit
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,26 +35,38 @@ import com.example.presentation.theme.LocalTypography
 fun FilmCard(
     film: FilmUi,
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues()
+    paddingValues: PaddingValues = PaddingValues(),
+    onClick: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp
+    val screenHeight = configuration.screenHeightDp
+    val isPortrait = screenHeight > screenWidth
     val colors = LocalColorScheme.current
     val typography = LocalTypography.current
+
+    val imageHeight = if (isPortrait) {
+        296.dp
+    } else {
+        592.dp
+    }
+
     Column(
-        modifier = modifier.padding(paddingValues),
+        modifier = modifier.padding(paddingValues).clickable { onClick() },
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         SubcomposeAsyncImage(
             modifier = Modifier
-                .height(222.dp)
+                .fillMaxWidth()
+                .height(imageHeight)
                 .clip(RoundedCornerShape(4.dp)),
-            contentScale = ContentScale.Crop,
             model = film.imageUrl,
             contentDescription = stringResource(R.string.film_image),
+            contentScale = ContentScale.Crop,
             error = {
                 Box(
                     modifier = Modifier
                         .background(colors.lightGrey1)
-                        .fillMaxSize()
                 ) {
                     Icon(
                         modifier = Modifier.align(Alignment.Center),
@@ -66,7 +82,6 @@ fun FilmCard(
                 Box(
                     modifier = Modifier
                         .background(colors.lightGrey1)
-                        .fillMaxSize()
                 ) {
                     Icon(
                         modifier = Modifier.align(Alignment.Center),
@@ -104,6 +119,8 @@ private fun FilmCardPreview() {
         imageUrl = ""
     )
     Column {
-        FilmCard(film = film)
+        FilmCard(film = film) {
+
+        }
     }
 }

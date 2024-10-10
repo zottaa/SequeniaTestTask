@@ -54,7 +54,7 @@ fun LazyListScope.genresList(
                 .fillMaxWidth()
 
         ) {
-            Text(text = genre, style = itemTextStyle, color = colors.contentColor)
+            Text(text = genre.replaceFirstChar { char -> char.uppercaseChar() }, style = itemTextStyle, color = colors.contentColor)
         }
     }
 }

@@ -17,6 +17,9 @@ composeBom = "2024.09.03"
 ksp = "1.9.23-1.0.20"
 jetbrainsKotlinJvm = "1.9.0"
 koin = "3.5.6"
+navigationFragmentKtx = "2.8.1"
+navigationUiKtx = "2.8.1"
+fragmentKtx = "1.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +48,9 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = {module = "io.insert-koin:koin-android"}
 koin-compose = {module = "io.insert-koin:koin-androidx-compose"}
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
