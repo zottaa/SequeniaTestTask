@@ -27,6 +27,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -38,9 +39,10 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.13"
     }
     packaging {
         resources {
@@ -50,13 +52,15 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
@@ -66,4 +70,11 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(project(":presentation"))
+    implementation(project(":domain"))
+    implementation(project(":data"))
 }
