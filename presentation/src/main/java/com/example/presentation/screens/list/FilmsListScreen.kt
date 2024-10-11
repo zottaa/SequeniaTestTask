@@ -41,14 +41,14 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FilmsListScreen(navigateToFilmDetails: (Long) -> Unit) {
+internal fun FilmsListScreen(navigateToFilmDetails: (Long) -> Unit) {
     FilmsListScreen(navigateToFilmDetails = navigateToFilmDetails, viewModel = koinViewModel())
 }
 
 @Composable
 internal fun FilmsListScreen(
+    viewModel: FilmsListViewModel = koinViewModel(),
     navigateToFilmDetails: (Long) -> Unit,
-    viewModel: FilmsListViewModel = koinViewModel()
 ) {
     val state by viewModel.getState().collectAsStateWithLifecycle()
 

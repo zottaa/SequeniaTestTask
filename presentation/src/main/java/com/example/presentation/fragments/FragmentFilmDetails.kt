@@ -8,11 +8,16 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.presentation.R
 import com.example.presentation.screens.details.FilmDetailsScreen
+import com.example.presentation.screens.details.FilmDetailsViewModel
 import com.example.presentation.screens.list.FilmsListScreen
 import com.example.presentation.theme.SequeniaTestTaskTheme
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.compose.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FragmentFilmDetails : Fragment() {
     override fun onCreateView(

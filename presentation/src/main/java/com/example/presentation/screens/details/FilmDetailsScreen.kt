@@ -38,15 +38,15 @@ import com.example.presentation.uikit.TopBar
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun FilmDetailsScreen(navigateBack: () -> Unit) {
+internal fun FilmDetailsScreen(navigateBack: () -> Unit) {
     FilmDetailsScreen(navigateBack = navigateBack, viewModel = koinViewModel())
 }
 
 
 @Composable
 internal fun FilmDetailsScreen(
+    viewModel: FilmDetailsViewModel = koinViewModel(),
     navigateBack: () -> Unit,
-    viewModel: FilmDetailsViewModel = koinViewModel()
 ) {
     val state by viewModel.getState().collectAsStateWithLifecycle()
 

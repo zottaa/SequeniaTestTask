@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val FILM_ID = "filmId"
+
 internal class FilmDetailsViewModel(
     private val filmDomainToUiMapper: FilmDomainToUiMapper,
     private val loadFilmByIdUseCase: LoadFilmByIdUseCase,
@@ -25,7 +27,7 @@ internal class FilmDetailsViewModel(
 
     init {
         viewModelScope.launch {
-            val id: Long? = savedStateHandle["filmId"]
+            val id: Long? = savedStateHandle[FILM_ID]
             if (id != null) {
                 observeFilm()
                 loadFilmByIdUseCase(id)

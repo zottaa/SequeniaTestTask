@@ -1,5 +1,6 @@
 package com.example.presentation.screens.list
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.usecase.GetFilmsUseCase
@@ -13,10 +14,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val SELECTED_GENRE = "selectedGenre"
+
 internal class FilmsListViewModel(
     private val loadFilmsUseCase: LoadFilmsUseCase,
     private val getFilmsUseCase: GetFilmsUseCase,
-    private val filmsLoadStatusToFilmsListScreenStateMapper: FilmsLoadStatusToFilmsListScreenStateMapper
+    private val filmsLoadStatusToFilmsListScreenStateMapper: FilmsLoadStatusToFilmsListScreenStateMapper,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val selectedGenre: MutableStateFlow<String> = MutableStateFlow("")
 
@@ -40,6 +44,17 @@ internal class FilmsListViewModel(
         }
     }
 
+    fun saveGenre() {
+        savedStateHandle[SELECTED_GENRE] = selectedGenre.value
+    }
+
+    fun restoreGenre() {
+        val genre = savedStateHandle.get<String>(SELECTED_GENRE)
+        if (genre != null && genre != selectedGenre.value) {
+            selectGenre(genre)
+        }
+    }
+
     fun selectGenre(newGenre: String) {
         viewModelScope.launch {
             if (newGenre == selectedGenre.value) {
@@ -52,26 +67,7 @@ internal class FilmsListViewModel(
                 }
             }
             _state.update { currentState ->
-                when (currentState) {
-                    is FilmsListScreenState.Error -> currentState.copy(films = films.value.filter { film ->
-                        film.genres.contains(
-                            selectedGenre.value
-                        ) or
-                                selectedGenre.value.isBlank()
-                    }, selectedGenre = selectedGenre.value)
-
-                    is FilmsListScreenState.Loading -> currentState.copy(films = films.value.filter { film ->
-                        film.genres.contains(
-                            selectedGenre.value
-                        ) or selectedGenre.value.isBlank()
-                    }, selectedGenre = selectedGenre.value)
-
-                    is FilmsListScreenState.Show -> currentState.copy(films = films.value.filter { film ->
-                        film.genres.contains(
-                            selectedGenre.value
-                        ) or selectedGenre.value.isBlank()
-                    }, selectedGenre = selectedGenre.value)
-                }
+                applyGenreFilterOnState(currentState)
             }
         }
     }
@@ -81,6 +77,7 @@ internal class FilmsListViewModel(
     private fun observeFilms() {
         getFilmsUseCase()
             .onEach { filmsLoadStatus ->
+                println(filmsLoadStatus)
                 val newState = filmsLoadStatusToFilmsListScreenStateMapper.map(filmsLoadStatus)
                 handleNewState(newState)
             }.launchIn(viewModelScope)
@@ -95,7 +92,31 @@ internal class FilmsListViewModel(
             }
         }
         _state.update {
-            newState
+            applyGenreFilterOnState(newState)
         }
+    }
+
+    private fun applyGenreFilterOnState(currentState: FilmsListScreenState): FilmsListScreenState {
+        val filteredFilms = filterFilmsByGenre(films.value, selectedGenre.value)
+        return when (currentState) {
+            is FilmsListScreenState.Error -> currentState.copy(
+                films = filteredFilms,
+                selectedGenre = selectedGenre.value
+            )
+
+            is FilmsListScreenState.Loading -> currentState.copy(
+                films = filteredFilms,
+                selectedGenre = selectedGenre.value
+            )
+
+            is FilmsListScreenState.Show -> currentState.copy(
+                films = filteredFilms,
+                selectedGenre = selectedGenre.value
+            )
+        }
+    }
+
+    private fun filterFilmsByGenre(films: List<FilmUi>, genre: String): List<FilmUi> {
+        return films.filter { it.genres.contains(genre) || genre.isBlank() }
     }
 }

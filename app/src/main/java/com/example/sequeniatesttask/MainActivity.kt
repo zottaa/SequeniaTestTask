@@ -4,14 +4,8 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsetsController
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import com.example.presentation.screens.details.FilmDetailsScreen
-import com.example.presentation.screens.list.FilmsListScreen
-import com.example.presentation.theme.SequeniaTestTaskTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
