@@ -1,21 +1,16 @@
 package com.example.presentation.screens.details
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +26,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
 import com.example.presentation.R
 import com.example.presentation.models.FilmUi
-import com.example.presentation.theme.ColorScheme
 import com.example.presentation.theme.LocalColorScheme
 import com.example.presentation.theme.LocalTypography
 import com.example.presentation.uikit.ProgressIndicator
@@ -88,102 +82,127 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun FilmDetailsContent(film: FilmUi, modifier: Modifier = Modifier) {
-    val colors = LocalColorScheme.current
-    val typography = LocalTypography.current
-    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+    val scrollState = rememberScrollState()
+    val defaultModifier =
+        Modifier
+            .size(width = 176.dp, height = 268.dp)
+            .clip(RoundedCornerShape(4.dp))
+    Column(modifier = modifier.verticalScroll(scrollState)) {
         SubcomposeAsyncImage(
             modifier = Modifier
                 .padding(vertical = 24.dp)
-                .size(width = 176.dp, height = 268.dp)
-                .clip(
-                    RoundedCornerShape(4.dp)
-                )
+                .then(defaultModifier)
                 .align(Alignment.CenterHorizontally),
             contentScale = ContentScale.Crop,
             model = film.imageUrl,
             contentDescription = stringResource(R.string.film_image),
             error = {
                 DefaultImage(
-                    modifier = Modifier
-                        .size(width = 176.dp, height = 268.dp)
-                        .clip(
-                            RoundedCornerShape(4.dp)
-                        )
+                    modifier = defaultModifier
                 )
             },
             loading = {
                 DefaultImage(
-                    modifier = Modifier
-                        .size(width = 176.dp, height = 268.dp)
-                        .clip(
-                            RoundedCornerShape(4.dp)
-                        )
+                    modifier = defaultModifier
                 )
             }
         )
-        Text(
-            text = film.localizedName,
-            style = typography.title1,
-            color = colors.black,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Text(
-            text = if (film.genres.isNotEmpty()) {
-                stringResource(
-                    R.string.genres_and_year,
-                    film.genres.joinToString(", ").plus(","),
-                    film.year
-                )
-            } else {
-                stringResource(R.string.year, film.year)
-            },
-            style = typography.genre,
-            color = colors.grey,
-            modifier = Modifier.padding(bottom = 10.dp)
-        )
-        if (film.rating > 0) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(bottom = 14.dp)
-            ) {
-                Text(
-                    text = film.rating.toString(),
-                    style = typography.rating,
-                    color = colors.darkBlue
-                )
-                Text(
-                    text = stringResource(R.string.rating_from),
-                    style = typography.ratingFrom,
-                    color = colors.darkBlue,
-                    modifier = Modifier.padding(top = 9.dp, bottom = 3.dp)
-                )
-            }
-        } else {
-            Text(
-                text = stringResource(R.string.no_rating),
-                style = typography.rating,
-                color = colors.darkBlue,
-                modifier = Modifier.padding(bottom = 14.dp)
-            )
-        }
-        if (film.description.isNotBlank()) {
-            Text(
-                text = film.description,
-                style = typography.text,
-                color = colors.black,
-                modifier = Modifier.padding(bottom = 14.dp)
-            )
-        } else {
-            Text(
-                text = stringResource(R.string.no_description),
-                style = typography.text,
-                color = colors.black,
-                modifier = Modifier.padding(bottom = 14.dp)
-            )
-        }
+        FilmTitle(film.localizedName)
+        FilmGenresAndYear(film)
+        FilmRating(film.rating)
+        FilmDescription(film.description)
     }
 }
+
+@Composable
+private fun FilmTitle(title: String) {
+    val typography = LocalTypography.current
+    val colors = LocalColorScheme.current
+
+    Text(
+        text = title,
+        style = typography.title1,
+        color = colors.black,
+        modifier = Modifier.padding(bottom = 8.dp)
+    )
+}
+
+@Composable
+private fun FilmGenresAndYear(film: FilmUi) {
+    val typography = LocalTypography.current
+    val colors = LocalColorScheme.current
+
+    Text(
+        text = if (film.genres.isNotEmpty()) {
+            stringResource(
+                R.string.genres_and_year,
+                film.genres.joinToString(", ").plus(","),
+                film.year
+            )
+        } else {
+            stringResource(R.string.year, film.year)
+        },
+        style = typography.genre,
+        color = colors.grey,
+        modifier = Modifier.padding(bottom = 10.dp)
+    )
+}
+
+@Composable
+private fun FilmRating(rating: Float) {
+    val typography = LocalTypography.current
+    val colors = LocalColorScheme.current
+
+    if (rating > 0) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 14.dp)
+        ) {
+            Text(
+                text = rating.toString(),
+                style = typography.rating,
+                color = colors.darkBlue
+            )
+            Text(
+                text = stringResource(R.string.rating_from),
+                style = typography.ratingFrom,
+                color = colors.darkBlue,
+                modifier = Modifier.padding(top = 9.dp, bottom = 3.dp)
+            )
+        }
+    } else {
+        Text(
+            text = stringResource(R.string.no_rating),
+            style = typography.rating,
+            color = colors.darkBlue,
+            modifier = Modifier.padding(bottom = 14.dp)
+        )
+    }
+}
+
+@Composable
+private fun FilmDescription(description: String) {
+    val typography = LocalTypography.current
+    val colors = LocalColorScheme.current
+
+    if (description.isNotBlank()) {
+        Text(
+            text = description,
+            style = typography.text,
+            color = colors.black,
+            modifier = Modifier.padding(bottom = 14.dp)
+        )
+    } else {
+        Text(
+            text = stringResource(R.string.no_description),
+            style = typography.text,
+            color = colors.black,
+            modifier = Modifier.padding(bottom = 14.dp)
+        )
+    }
+}
+
 
 @Composable
 private fun DefaultImage(modifier: Modifier = Modifier) {

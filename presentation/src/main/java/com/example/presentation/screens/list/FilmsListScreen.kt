@@ -1,11 +1,11 @@
 package com.example.presentation.screens.list
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,7 +19,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,7 +52,6 @@ internal fun FilmsListScreen(
     val state by viewModel.getState().collectAsStateWithLifecycle()
 
     val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val colors = LocalColorScheme.current
 
@@ -74,24 +72,7 @@ internal fun FilmsListScreen(
     ) { innerPadding ->
         when (val currentState = state) {
             is FilmsListScreenState.Error -> {
-                val actionLabel = context.getString(R.string.repeat).uppercase()
-                LaunchedEffect(currentState.error.id) {
-                    scope.launch {
-                        val result = snackBarHostState.showSnackbar(
-                            message = currentState.error.message,
-                            actionLabel = actionLabel,
-                        )
-                        when (result) {
-                            SnackbarResult.Dismissed -> {
-
-                            }
-
-                            SnackbarResult.ActionPerformed -> {
-                                viewModel.refresh()
-                            }
-                        }
-                    }
-                }
+                ShowSnackbar(context, currentState, snackBarHostState, viewModel::refresh)
                 FilmsListContent(
                     modifier = Modifier.padding(innerPadding),
                     films = currentState.films,
@@ -119,6 +100,34 @@ internal fun FilmsListScreen(
                 onFilmCardClick = navigateToFilmDetails,
                 onGenreClick = viewModel::selectGenre
             )
+        }
+    }
+}
+
+@Composable
+private fun ShowSnackbar(
+    context: Context,
+    currentState: FilmsListScreenState.Error,
+    snackBarHostState: SnackbarHostState,
+    onAction: () -> Unit,
+) {
+    val actionLabel = context.getString(R.string.repeat).uppercase()
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(currentState.error.id) {
+        scope.launch {
+            val result = snackBarHostState.showSnackbar(
+                message = currentState.error.message,
+                actionLabel = actionLabel,
+            )
+            when (result) {
+                SnackbarResult.Dismissed -> {
+
+                }
+
+                SnackbarResult.ActionPerformed -> {
+                    onAction()
+                }
+            }
         }
     }
 }
@@ -157,67 +166,86 @@ internal fun FilmsListContent(
     onFilmCardClick: (Long) -> Unit,
     onGenreClick: (String) -> Unit,
 ) {
-    val typography = LocalTypography.current
-    val colors = LocalColorScheme.current
-
     LazyColumn(
         modifier = modifier,
     ) {
         item {
             Spacer(modifier = Modifier.size(8.dp))
-
-            if (genres.isNotEmpty()) {
-                Text(
-                    text = stringResource(R.string.genres),
-                    style = typography.title2,
-                    color = colors.black,
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                )
-            }
+            GenresHeader(genres)
         }
 
         genresList(genres, selectedGenre.ifBlank { null }, onGenreClick = onGenreClick)
 
         item {
             Spacer(modifier = Modifier.size(16.dp))
-            if (films.isNotEmpty()) {
-                Text(
-                    text = stringResource(R.string.films),
-                    style = typography.title2,
-                    color = colors.black,
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.size(8.dp))
-            }
+            FilmsHeader(films)
         }
+
         items(films.chunked(2)) { filmPair ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            ) {
-                FilmCard(
-                    film = filmPair[0],
-                    modifier = Modifier.weight(0.5f),
-                    onClick = { onFilmCardClick(filmPair[0].id) }
-                )
-                Spacer(modifier = Modifier.size(8.dp))
-                if (filmPair.size > 1) {
-                    FilmCard(
-                        film = filmPair[1],
-                        modifier = Modifier.weight(0.5f),
-                        onClick = { onFilmCardClick(filmPair[1].id) }
-                    )
-                } else {
-                    Spacer(modifier = Modifier.weight(0.45f))
-                }
-            }
+            FilmRow(filmPair = filmPair, onFilmCardClick = onFilmCardClick)
         }
+
         item {
             Spacer(modifier = Modifier.size(16.dp))
         }
     }
 }
+
+@Composable
+private fun GenresHeader(genres: List<String>) {
+    val typography = LocalTypography.current
+    val colors = LocalColorScheme.current
+
+    if (genres.isNotEmpty()) {
+        Text(
+            text = stringResource(R.string.genres),
+            style = typography.title2,
+            color = colors.black,
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+        )
+    }
+}
+
+@Composable
+private fun FilmsHeader(films: List<FilmUi>) {
+    val typography = LocalTypography.current
+    val colors = LocalColorScheme.current
+
+    if (films.isNotEmpty()) {
+        Text(
+            text = stringResource(R.string.films),
+            style = typography.title2,
+            color = colors.black,
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+        )
+    }
+}
+
+@Composable
+private fun FilmRow(filmPair: List<FilmUi>, onFilmCardClick: (Long) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+    ) {
+        FilmCard(
+            film = filmPair[0],
+            modifier = Modifier.weight(0.5f),
+            onClick = { onFilmCardClick(filmPair[0].id) }
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        if (filmPair.size > 1) {
+            FilmCard(
+                film = filmPair[1],
+                modifier = Modifier.weight(0.5f),
+                onClick = { onFilmCardClick(filmPair[1].id) }
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(0.45f))
+        }
+    }
+}
+
 
 
 
