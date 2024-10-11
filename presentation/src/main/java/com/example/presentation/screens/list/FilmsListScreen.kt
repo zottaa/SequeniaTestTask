@@ -198,14 +198,14 @@ internal fun FilmsListContent(
             ) {
                 FilmCard(
                     film = filmPair[0],
-                    modifier = Modifier.weight(0.45f),
+                    modifier = Modifier.weight(0.5f),
                     onClick = { onFilmCardClick(filmPair[0].id) }
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 if (filmPair.size > 1) {
                     FilmCard(
                         film = filmPair[1],
-                        modifier = Modifier.weight(0.45f),
+                        modifier = Modifier.weight(0.5f),
                         onClick = { onFilmCardClick(filmPair[1].id) }
                     )
                 } else {

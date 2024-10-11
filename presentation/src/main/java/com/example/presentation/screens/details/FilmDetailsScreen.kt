@@ -1,5 +1,6 @@
 package com.example.presentation.screens.details
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -102,10 +103,22 @@ internal fun FilmDetailsContent(film: FilmUi, modifier: Modifier = Modifier) {
             model = film.imageUrl,
             contentDescription = stringResource(R.string.film_image),
             error = {
-                defaultImage(colors)
+                DefaultImage(
+                    modifier = Modifier
+                        .size(width = 176.dp, height = 268.dp)
+                        .clip(
+                            RoundedCornerShape(4.dp)
+                        )
+                )
             },
             loading = {
-                defaultImage(colors)
+                DefaultImage(
+                    modifier = Modifier
+                        .size(width = 176.dp, height = 268.dp)
+                        .clip(
+                            RoundedCornerShape(4.dp)
+                        )
+                )
             }
         )
         Text(
@@ -173,18 +186,11 @@ internal fun FilmDetailsContent(film: FilmUi, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun defaultImage(colors: ColorScheme) {
-    Box(
-        modifier = Modifier
-            .background(colors.lightGrey1)
-    ) {
-        Icon(
-            modifier = Modifier.align(Alignment.Center),
-            painter = painterResource(id = R.drawable.default_image_icon),
-            contentDescription = stringResource(
-                R.string.default_image_icon
-            ),
-            tint = colors.lightGrey2
-        )
-    }
+private fun DefaultImage(modifier: Modifier = Modifier) {
+    Image(
+        modifier = modifier,
+        painter = painterResource(id = R.drawable.default_image),
+        contentDescription = stringResource(id = R.string.default_image),
+        contentScale = ContentScale.Crop
+    )
 }
