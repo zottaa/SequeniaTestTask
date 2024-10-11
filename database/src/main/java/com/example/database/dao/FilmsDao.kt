@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.database.models.FilmDBO
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FilmsDao {
